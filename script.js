@@ -11,7 +11,7 @@ function findTime(content) {
     const enrollmentStart = lines.find(line => line.includes('Show enrollment screen'));
     if (!enrollmentStart) {
         text.style.display = "block";
-        text.innerText = "Error (THIS IS NOT A BUG!): Could not parse for 'Show enrollment screen', please ask for support in copernicium";
+        text.innerText = "エラー（バグではありません！）: Could not parse for 'Show enrollment screen', サポートは copernicium へ";
         text.style.color = "#ed8796";
         return;
     }
@@ -22,7 +22,7 @@ function findTime(content) {
     const endLine = lines.find(line => line.includes('Blocking dev mode by device policy'));
     if (!endLine) {
         text.style.display = "block";
-        text.innerText = "Error (THIS IS NOT A BUG!): Could not parse for 'Blocking dev mode by device policy', please ask for support in copernicium";
+        text.innerText = "エラー（バグではありません！）: Could not parse for 'Blocking dev mode by device policy', サポートは copernicium へ";
         text.style.color = "#ed8796";
         return;
     }
@@ -39,7 +39,7 @@ function findTime(content) {
     const timeDifference = endDate - startDate;
     const displayTime = ((timeDifference) / 1000) + " - " + ((timeDifference + 200) / 1000);
 
-    text.innerText = "Reset Timing: " + displayTime;
+    text.innerText = "リセットタイミング: " + displayTime;
     text.style.color = "#e0e0e0";
     text.style.display = "block";
     text.style.animation = "glow 1s 1";
@@ -71,7 +71,7 @@ fileInput.addEventListener('change', (e) => {
 async function handleFile(file) {
     if (!file || !file.name.endsWith('.tar.gz')) {
         resetText.style.display = "block";
-        resetText.innerText = "Please select a valid .tar.gz file";
+        resetText.innerText = "有効な .tar.gz ファイルを選択してください。";
         resetText.style.color = "#ed8796";
         return;
     }
@@ -106,13 +106,13 @@ async function handleFile(file) {
             findTime(content);
         } else {
             resetText.style.display = "block";
-            resetText.innerText = "No Chrome log files found in the archive.";
+            resetText.innerText = "書庫内に Chrome ログファイルが存在しませんでした";
             resetText.style.color = "#ed8796";
         }
 
     } catch (error) {
         resetText.style.display = "block";
-        resetText.innerText = `Error processing file: ${error.message}`;
+        resetText.innerText = `ファイルの処理中にエラー: ${error.message}`;
         resetText.style.color = "#ed8796";
     }
 

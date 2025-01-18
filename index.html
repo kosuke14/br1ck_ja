@@ -1,6 +1,6 @@
 <!-- ignore bad everything src plz -->
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ja">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,159 +10,160 @@
     <link rel="icon" type="image/x-icon" href="/favicon/favicon.ico">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.1.0/pako.min.js"></script>
     <meta property="og:title" content="BR1CK">
-    <meta property="og:description" content="Unenrollment via creating an empty FWMP TPM space.">
+    <meta property="og:description" content="TPMに空の管理パラメータを作成することによるChromebookの解除。">
     <meta property="og:image" content="/favicon/android-chrome-192x192.png">
 </head>
 <body>
     <header>
         <center><img src="images/br1ck.png" width="420"></center>
-        <h2 id="join-button"><em>By <a href="https://discord.gg/Pb6qUkacpj">Copernicium</a></em><br>
+        <h2 id="join-button"><em><a href="https://discord.gg/Pb6qUkacpj">Copernicium</a>が発見。 (非公式翻訳: <a href="https://github.com/kosuke14">kosuke14</a>)</em><br>
     </header>
 
     <main>
         <section> 
-            <h2>what even is BR1CK?</h2>
-            <p>BR1CK was an exploit released October 27th, 2024 which takes advantage of an oversight while creating FWMP in the TPM. It is capable of unenrolling all devices without platform FWMP on any version below v132. </p>
-            <small>Scroll down to see if your device is compatible</small>
+            <h2>BR1CKって？</h2>
+            <p>BR1CK は、2024年10月27日にリリースされた手法で、TPM内に管理パラメータを作成する際の弱点を突いたものです。この手法は、v132未満の全てのバージョンとプラットフォーム管理パラメータのない全てのデバイスの企業登録解除に有効です。</p>
+            <small>あなたのデバイスとの互換性があれば、下にスクロールしてください。</small>
         </section>
         <section> 
-            <h2>so, how does it work?</h2>
-            <p>The exploit works because of an issue that these chromebooks have when enrolling. If you EC reset<sup>[1]</sup> <span class="highlight">↻+⏻</span> at just the right time, it will interupt the creation process and leave you with a blank FWMP. This bricks because its unexpected for FWMP to exist but have no value. <sup>[2]</sup> This state of no FWMP means we can unenroll since we aren't under it's control<sup>[3]</sup>. This allows us to boot into sh1mmer, unenroll, and fix the brick with <span class="highlight">gsctool -a -o</span></p>
-            <small>1. EC reset = the 2 keys used to forcefully restart the chromebook<br>2. FWMP TPM space = the data used by ChromeOS for enrollment related stuff<br>3. While FWMP is applied, protections are made to stop it from getting removed. These protections are blocking dev mode, blocking debug cabels, and more which prevents unenrollment</small>
+            <h2>どういう仕組みなの？</h2>
+            <p>Chromebook が企業登録をする際に問題が発生することによってこの手法が利用できます。タイミングよくハードリセット<sup>[1]</sup> <span class="highlight">↻+⏻</span> をすると、管理パラメータの作成処理が中断され、空の管理パラメータが残ります。これによりTPM管理パラメータ<sup>[2]</sup>が予期せぬ値（空の状態）になるため、デバイスがソフト文鎮化します。この状態は、管理パラメータが存在しないということになり、デバイスが管理されていない状態<sup>[3]</sup>になるため、登録解除が可能となるのです。この状態では、 Sh1mmer が起動でき、登録解除、 <span class="highlight">gsctool -a -o</span> を使った文鎮化解除が可能となるのです。</p>
+            <small>1. ハードリセット = 2つのキーを同時に押すことによって Chromebook を瞬間的に強制再起動すること<br>2. TPM管理パラメータ = ChromeOS によって使用されているデータ領域で、企業登録関連のデータが保管されている<br>3. 管理パラメータが適用されている間は管理パラメータが消去されないように保護されています。管理パラメータが保護されることによって、デベロッパーモードをブロックしたり、デバッグケーブルの使用をブロックしたり、その他の企業登録解除を妨げる機能が適用されます。</small>
         </section>
         <section>
-            <h2>how did you even find this?</h2>
-            <p>While trying to do CRSH2TTY<sup>[1]</sup>, I ended up bricking my device multiple times (a total of four). One time, I randomly tried to disable write protection while unbricking with a SuzyQ (debug cable), and surprisingly, it worked! This led to the discovery that FWMP doesn't apply while FWMP is corrupted. This functionality is stored in the read-only firmware, which means Google would have to produce updated Chromebooks with the fix to stop this.<br>
-            <small>All of my exploits have been made due to CRSH2TTY in some way.<br>1. CRSH2TTY was a (now patched) unenrollment exploit that required resetting at specific times, similar to BR1CK<br></small></p>
+            <h2>どうやってこれを見つけたの？</h2>
+            <p>CRSH2TTY<sup>[1]</sup>を試している間、私のデバイスを複数回文鎮化させました（計4回）。うち一回はて手当たり次第に SuzyQ （デバッグケーブル）を用いて文鎮化解除中に書き込み保護の無効化を試行していたところ、なんと驚くことにうまくいったんです！これが、管理パラメータが破損しているときには管理パラメータが適用されていなかったということがわかることにつながりました。管理パラメータの機能は読み込み専用ファームウェアに保管されており、つまりを言うと Google が、更新された Chromebook を製造しない限りはこの手法を止めるための修正をすることができない可能性が高いということです。<br>
+            <small>私の手法のすべては CRSH2TTY をなんとか動作させようとするために作られたものです。<br>1. CRSH2TTY は、企業登録解除の（現在は動作しない）手法で、これは BR1CK と似ていて、特定のタイミングでリセットすることで解除するものです。<br></small></p>
         </section>
         <section> 
-            <h2>what do i need to do this?</h2>
-            <p>1. Luck (or skill, because you can get it consistently)<br>
-            <details><summary>2. A board that is not platform FWMP (click arrow for more info)</summary>
-                As of October 29, 2024, if you have one of the boards listed below, you cannot do the exploit:<br>
+            <h2>必要なものは？</h2>
+            <p>1. 運（または、スキル。慣れれば着実にできるようになるため）<br>
+            <details><summary>2. プラットフォーム管理パラメータのないボード (矢印をクリックして詳細を見る)</summary>
+                2024年10月29日時点で、以下のようなボードではこの手法を利用することはできません。<br>
                 <i>nissa, corsola, brya, brask, cherry, guybrush, skyrim, rex, staryu, geralt</i><br>
-                <span style="color:cyan">How do I find my board name?</span><br>
-                <small id="boardname">Go to <a href="chrome://version">chrome://version</a>, click <span class="highlight">Ctrl + F</span> and search for "stable-channel" the word after that is your board</small><br>
+                <span style="color:cyan">ボード名ってどこで見つけるの？</span><br>
+                <small id="boardname"><a href="chrome://version">chrome://version</a> に行って、<span class="highlight">Ctrl + F</span>を押し、「stable-channel」と入力して出てくる文字列の後に書いてあるのがあなたのボードです</small><br>
             </details>
-            3. (PREFERABLY) access to <a href="chrome://network#logs">chrome://network#logs</a><br>
-            4. A leaked shim, a USB drive, and another pc to flash it
-            4.1. if you have a keyrolled <span class="highlight">dedede</span> then you can buy a <a href="https://www.ebay.com/itm/335130747039">suzy qable</a><small>(highly recommend this seller, bought from them and they're highly reputable)</small> and use alternative steps i can provide/walk you through
+            3. （できれば）<a href="chrome://network#logs">chrome://network#logs</a> へのアクセス<br>
+            4. 流出した Shim と USB メモリ、USB メモリに書き込むための別のパソコン<br>
+            4.1. <span class="highlight">dedede</span> であれば、<a href="https://www.ebay.com/itm/335130747039">suzy qable</a><small>（こちらの販売者から買うことを強くお勧めします。とても評判がいいんです。）</small> それかここで示される別の方法でも大丈夫です
             </p>
         </section>
         <section>
-            <h2>how do i perform this exploit?</h2>
-            <p>Backup anything that is not sync'd to your google account (mainly files)</p><p>It is a good idea to read these instructions on another device like a phone, you will not be able to access this guide on the chromebook you are using</p>
+            <h2>やり方</h2>
+            <p>Google アカウントに同期されないもの（主にファイルなど）はすべてバックアップしておいてください。</p><p>スマホなどの別のデバイスからこの説明を読みましょう。この手法を行っている途中は対象の Chromebook ではこの説明にアクセスできなくなります。</p>
             <p><details style="line-height:1.75;font-size:15px;">
-                <summary><b>[RECOMMENDED] For users with chrome://network#logs (can't be policy blocked, can't use oobescape)</b></summary>
-                1. Go to the <a href="#timer">section below this one</a> (finding the reset times), go through the process, and memorize the time it gives you, then continue<br>
-                2. Powerwash again by signing out, pressing Ctrl+Alt+Shift+R<br>
-                3. Proceed through the setup, when "Getting device ready" pops up, get a stopwatch ready and wait for the next "Enterprise enrollment" screen. <br>
-                4. When "Enterprise enrollment" pops up, start your stopwatch.<br>
-                5. Wait until you're in the ranges of time (I would go for the higher end) the file uploader gave you, perform an EC-Reset by <span class="highlight">↻+⏻</span>.<br>
-                6. If chrome turns back on and you get one of the following screens, proceed, otherwise, keep trying (this may take ages but most people can get it in 2-20 tries)<br><center>
-                    <img src="images/chromeosismissingordamaged.jpg" style="width:30vh;height:30vh"></img>
-                    <img src="images/somethingwentwrong.jpg" style="width:40vh;height:30vh"></img><br>
-                    <small>if you click tab on either of these, under recovery reason it should say something about an error in the TPM</small></center>
-                <details><summary>7. Once bricked, get a <a href="https://dl.darkn.bio/SH1mmer/Prebuilt/Legacy">shim</a> (this guide will be using legacy, view arrow for more info)<br></summary>
-                    To flash a shim you will need a secondary computer or a different way to connect a usb to a device (yes there are mobile methods if you have the correct connector)<br>
-                    1. Head to the link above (https://dl.darkn.bio/SH1mmer/Prebuilt/Legacy)<br>
-                    2. Download the shim corresponding to your board<br>
-                    Now here's the hard part, flashing<br>
-                    4. Use one of the following pieces of software:<br>
-                    <a href='https://chromewebstore.google.com/detail/pocpnlppkickgojjlmhdmidojbmbodfm'>CRU Extension</a><br>
+                <summary><b>【推奨】chrome://network#logs にアクセスできる方々向け（ポリシーでブロックされません。初期設定画面のスキップはできません）</b></summary>
+                1. <a href="#timer">このセクション</a>（リセットタイミングを調べる）で、使い方に従い、出てきた時間を覚えてください。<br>
+                2. ログアウトして、 Ctrl+Alt+Shift+R を押すことでもう一度 Powerwash してください。<br>
+                3. 初期設定を画面の通りに従い、途中で「デバイスを準備しています...」が出てきたらストップウォッチを準備して、次に出てくる「企業の登録」の画面を待っていてください。 <br>
+                4. 「企業の登録」が出てきたら、ストップウォッチをスタートしてください。<br>
+                5. 先ほど調べたタイミング（遅めであるほうが高精度）まで待ち、<span class="highlight">↻+⏻</span>でハードリセットを行ってください。<br>
+                6. Chromebook の画面が立ち上がった時、次の二つの画像のどれかの画面になったら次のステップに進んでください。それ以外であれば、もう一度試してください。<br><center>
+                    <img src="images/chromeosismissingordamaged_ja.jpg" style="width:30vh;height:30vh"></img>
+                    <img src="images/somethingwentwrong_ja.jpg" style="width:40vh;height:30vh"></img><br>
+                    <small>どちらかの画面の状態で TAB キーを押すと、TPMでエラーがあったというリカバリー原因が出るはずです。</small></center>
+                <details><summary>7. 文鎮化に成功したら、<a href="https://dl.darkn.bio/SH1mmer/Prebuilt/Legacy">Shim</a> を入手してください。 （この説明では Legacy を使います。Shim の使い方の詳細は矢印から）<br></summary>
+                    Shim を書き込むには、別のパソコンか、同じように USB が挿さるもので別の方法（モバイルPCであっても正しいコネクタがあれば可能）が必要になります。<br>
+                    1. こちらのリンクを踏んで（https://dl.darkn.bio/SH1mmer/Prebuilt/Legacy）<br>
+                    2. あなたのボードに合う Shim をダウンロードします。<br>
+                    ここからはハードな書き込みの手順です。<br>
+                    4. 次のうちのどれかのソフトウェアを用います:<br>
+                    <a href='https://chromewebstore.google.com/detail/pocpnlppkickgojjlmhdmidojbmbodfm'>CRU 拡張機能</a><br>
                     <a href='https://rufus.ie'>Rufus</a><br>
                     <a href='https://etcher.balena.io'>BalenaEtcher</a><br>
-                    (if your on linux you can also use dd)<br>
+                    （Linux なら dd でも可能です）<br>
                     <br>
-                    <b>this guide will use the CRU extension</b><br>
-                    5. Open CRU and click the setting icon in the top right<br>
-                    6. Select the option containing "Local file"<br>
-                    7. Select your shim in the file manager<br>
-                    8. Select your USB<br>
-                    9. Wait for it to finish flashing, when it's done you can take it out and continue<br>
+                    <b>ここでは CRU 拡張機能を用います。</b><br>
+                    5. CRU を開き、右上の歯車アイコンをクリック<br>
+                    6. 「ローカル ファイルを使用する」を選択<br>
+                    7. 先ほどダウンロードした Shim を選択します。<br>
+                    8. 対象の USB を選択<br>
+                    9. 書き込みが終わるのを待ち、完了したら USB を抜いて、続行します。<br>
                 </details>
                 
-                <small>If you don't know your board name and still went on with these steps, you can look it up by entering the model name at the bottom on a site like <a href="https://cros.tech">cros.tech</a></small><br>
-                8. Press <span class="highlight">ESC + ↻ + ⏻</span> then click <span class="highlight">CTRL + D</span>, then <span class="highlight">enter</span> to enable developer mode (It doesn't matter if it's blocked), and then <span class="highlight">ESC + ↻ + ⏻</span> to enter recovery mode.<br>
-                9. Plug in your shim USB<br>
-                <small>If you get a screen saying "the device does not contain ChromeOS"/"no valid image" you either chose the wrong shim for your board, didn't go into developer mode, bad flash, bad file, or you've been keyrolled (and cannot continue)</small><br>
-                10. When the shim boots, type <span class="highlight">D</span> to select "Deprovision"<br>
-                11. Next, type <span class="highlight">B</span> to open a bash shell, this is where we'll unbrick<br>
-                12. Type the following command:<pre class="highlight">gsctool -a -o</pre>Press the power button whenever it spams "Press PP button now!" (this will take awhile) <small>whenever it says "Another press will be required" it is telling you to wait, you may have to wait for a minute or even more.</small><br>
-                13. Once you're at the end of that process you should reboot and you'll be back at the "Welcome!" screen. (if you don't reboot/gsctool doesn't work, proceed to the bottom section, "errors while unbricking")<br>
-                14. Get back into developer mode by pressing <span class="highlight">ESC + ↻ + ⏻</span>, then <span class="highlight">CTRL + D</span>, then <span class="highlight">enter</span>.<br> 
-                15. Either press <span class="highlight">CTRL + D</span> if you're on a <span style="color:white;">"OS verification is OFF"</span> white screen, or <span class="highlight">enter</span> if you're on a <span style="color:gray;">"You are in developer mode"</span> black screen. (keep this in mind if you want to stay in developer mode, you will have to do this each time you power it on)<br>
-                16. You may get a "Your system is transitioning into Developer Mode" screen, wait for the 5 minute timer to finish, then follow step 15 again to boot into ChromeOS.<br>
-                17. Start setting up your chromebook in OOBE by clicking <span class="highlight">Get Started</span>, going through WiFi, and continuing. Then prepare for the next step. <br>
-                18. When it says <span class="highlight">Enterprise Enrollement</span> boot into recovery mode <span class="highlight">(ESC + ↻ + ⏻)</span> <br>
-                19. Boot the shim<br>
-                20. Run deprovise (D), then reboot (e), boot and you should be unenrolled!<br>
-                <small>join <a href="https://discord.gg/Pb6qUkacpj">Copernicium</a> on discord for help with anything (MAKE SURE TO READ EVERYTHING FIRST)</small>
+                <small>ボード名がわからない場合、<a href="https://cros.tech">cros.tech</a> などのサイトからモデル名で検索することで確認できます。</small><br>
+                8. <span class="highlight">ESC + ↻ + ⏻</span> を押し、 <span class="highlight">CTRL + D</span> を押して、 <span class="highlight">enter</span> を押すと、デベロッパーモードが有効になります。（ブロックされていても大丈夫です）そして、<span class="highlight">ESC + ↻ + ⏻</span> でリカバリーモードに入ります。<br>
+                9. Shim の USB を挿します。<br>
+                <small>「デバイスに ChromeOS が含まれていません」や「有効なイメージがありません」などの画面が出た場合、間違った Shim を選んだか、デベロッパーモードでないか、書き込みに失敗したか、ファイルが異なるか、壊れているか（続行不可）が考えられます。</small><br>
+                10. Shim が起動したら、 <span class="highlight">D</span> を押して "Deprovision" を選択します。<br>
+                11. 次に、 <span class="highlight">B</span> を押して bash shell を開きます。ここから文鎮化を解除します。<br>
+                12. 次のコマンドを実行してください:<pre class="highlight">gsctool -a -o</pre>「Press PP button now!」と出たら、電源ボタンをポチポチ押します。（少し時間がかかります）<small>「Another press will be required」が出たら、待機してください。1分以上待つこともあります。</small><br>
+                13. 完了すると、再起動されて「ようこそ」画面に出ます。（再起動しないか、gsctool が正常に動作しない場合、一番下の「文鎮化解除中にエラーが出たら」をご覧ください）<br>
+                14. <span class="highlight">ESC + ↻ + ⏻</span> を押し、 <span class="highlight">CTRL + D</span> を押して、 <span class="highlight">enter</span> を押し、デベロッパーモードに入ってください。<br> 
+                15. <span style="color:white;">「OS の確認機能はオフになっています」</span> の白い画面が出たら <span class="highlight">CTRL + D</span>、<span style="color:gray;">「デベロッパー（開発者専用）モードです」</span> という灰色の画面が出たら <span class="highlight">enter</span> を押します。（デベロッパーモードを維持することを意識してください。起動時に毎回出てきます。）<br>
+                16. 「デベロッパーモードに移行しています」が出るので、5分待ちます。5分後、ステップ15の通りに起動してください。<br>
+                17. <span class="highlight">はじめる</span>を押して初期設定を開始し、Wi-Fi に接続して続行します。次のステップに備えてください。<br>
+                18. <span class="highlight">企業の登録</span> 画面が出たら、すぐにリカバリーモードに入ります<span class="highlight">(ESC + ↻ + ⏻)</span> <br>
+                19. Shim を起動します。<br>
+                20. Deprovision (D) を行い、再起動します (e) 。起動したら、登録解除成功です！<br>
+                <small>サポートは、 <a href="https://discord.gg/Pb6qUkacpj">Copernicium</a> に参加してください。（英語のみ、この翻訳には関係ありません、このページの内容をすべて読んでから質問してください）</small>
             </details></p>
             <p><details style="line-height:1.75;font-size:15px;">
-                <summary><b>[REALLY HARD AND LUCK BASED] For users WITHOUT chrome://network#logs</b></summary>
-                1. Powerwash by signing out, pressing Ctrl+Alt+Shift+R, and following the instructions.<br>
-                2. Proceed with the setup until you get to the "Getting device ready" screen.<br>
-                3. Get a stopwatch ready and wait for the "Enterprise enrollment" screen.<br>
-                3.5. Start your stopwatch and record how long it took for enrollment to finish <br>
-                4. Take the time it took, take around 1-1.5 seconds off the time it took to enroll, proceed<br>
-                5. Powerwash again by following step 1, go through the setup, and when you get to the "Enterprise enrollment" screen, start your stopwatch and wait for the time you got from step 4, perform an EC-Reset by <span class="highlight">↻+⏻</span>.<br>
-                6. If chrome turns back on and you get one of the following screens, proceed, otherwise, keep trying (this may take ages but most people can get it in 2-20 tries)<br><center>
+                <summary><b>【超高難易度・運任せ】chrome://network#logs へアクセスできない方々向け</b></summary>
+                1. ログアウトして、 Ctrl+Alt+Shift+R を押して Powerwash してください。<br>
+                2. 「デバイスを準備しています...」まで初期設定を進めてください。<br>
+                3. ストップウォッチを準備して、「企業の登録」画面が出るまで待機してください。<br>
+                3.5. スタートウォッチをスタートし、「企業の登録」画面が出てから登録が完了するまでの時間を測ってください。<br>
+                4. およそ1～1.5秒マイナスして、その時間を記録してください。<br>
+                5. ステップ1に従って Powerwash をして、初期設定し、「企業の登録」の画面でストップウォッチをスタートし、ステップ4で入手したタイミングでハードリセット <span class="highlight">↻+⏻</span> を施してください。<br>
+                6. Chromebook の画面が立ち上がった時、次の二つの画像のどれかの画面になったら次のステップに進んでください。それ以外であれば、もう一度試してください。（苦労しますが、ほとんどの人は2～20回で成功します）<br><center>
                     <img src="images/chromeosismissingordamaged.jpg" style="width:30vh;height:30vh"></img>
                     <img src="images/somethingwentwrong.jpg" style="width:40vh;height:30vh"></img><br>
-                    <small>if you click tab on either of these, under recovery reason it should say something about an error in the TPM</small></center>
-                <details><summary>7. Once bricked, get a <a href="https://dl.darkn.bio/SH1mmer/Prebuilt/Legacy">shim</a> (this guide will be using legacy, view arrow for more info)<br></summary>
-                    To flash a shim you will need a secondary computer or a different way to connect a usb to a device (yes there are mobile methods if you have the correct connector)<br>
-                    1. Head to the link above (https://dl.darkn.bio/SH1mmer/Prebuilt/Legacy)<br>
-                    2. Download the shim corresponding to your board<br>
-                    Now here's the hard part, flashing<br>
-                    4. Use one of the following pieces of software:<br>
-                    <a href='https://chromewebstore.google.com/detail/pocpnlppkickgojjlmhdmidojbmbodfm'>CRU Extension</a><br>
+                    <small>どちらかの画面の状態で TAB キーを押すと、TPMでエラーがあったというリカバリー原因が出るはずです。</small></center>
+                <details><summary>7. 文鎮化に成功したら、<a href="https://dl.darkn.bio/SH1mmer/Prebuilt/Legacy">Shim</a> を入手してください。 （この説明では Legacy を使います。Shim の使い方の詳細は矢印から）<br></summary>
+                    Shim を書き込むには、別のパソコンか、同じように USB が挿さるもので別の方法（モバイルPCであっても正しいコネクタがあれば可能）が必要になります。<br>
+                    1. こちらのリンクを踏んで（https://dl.darkn.bio/SH1mmer/Prebuilt/Legacy）<br>
+                    2. あなたのボードに合う Shim をダウンロードします。<br>
+                    ここからはハードな書き込みの手順です。<br>
+                    4. 次のうちのどれかのソフトウェアを用います:<br>
+                    <a href='https://chromewebstore.google.com/detail/pocpnlppkickgojjlmhdmidojbmbodfm'>CRU 拡張機能</a><br>
                     <a href='https://rufus.ie'>Rufus</a><br>
                     <a href='https://etcher.balena.io'>BalenaEtcher</a><br>
-                    (if your on linux you can also use dd)<br>
+                    （Linux なら dd でも可能です）<br>
                     <br>
-                    <b>this guide will use the CRU extension</b><br>
-                    5. Open CRU and click the setting icon in the top right<br>
-                    6. Select the option containing "Local file"<br>
-                    7. Select your shim in the file manager<br>
-                    8. Select your USB<br>
-                    9. Wait for it to finish flashing, when it's done you can take it out and continue<br>
+                    <b>ここでは CRU 拡張機能を用います。</b><br>
+                    5. CRU を開き、右上の歯車アイコンをクリック<br>
+                    6. 「ローカル ファイルを使用する」を選択<br>
+                    7. 先ほどダウンロードした Shim を選択します。<br>
+                    8. 対象の USB を選択<br>
+                    9. 書き込みが終わるのを待ち、完了したら USB を抜いて、続行します。<br>
                 </details>
-                <small>If you don't know your board name and still went on with these steps, you can look it up by entering the model name at the bottom on a site like <a href="https://cros.tech">cros.tech</a></small><br>
-                8. Press <span class="highlight">ESC + ↻ + ⏻</span> then click <span class="highlight">CTRL + D</span>, then <span class="highlight">enter</span> to enable developer mode (It doesn't matter if it's blocked), and then <span class="highlight">ESC + ↻ + ⏻</span> to enter recovery mode.<br>
-                9. Plug in your shim USB<br>
-                <small>If you get a screen saying "the device does not contain ChromeOS"/"no valid image" you either chose the wrong shim for your board, didn't go into developer mode, bad flash, bad file, or you've been keyrolled (and cannot continue)</small><br>
-                10. When the shim boots, type <span class="highlight">D</span> to select "Deprovision"<br>
-                11. Next, type <span class="highlight">B</span> to open a bash shell, this is where we'll unbrick<br>
-                12. Type the following command:<pre class="highlight">gsctool -a -o</pre>Press the power button whenever it spams "Press PP button now!" (this will take awhile) <small>whenever it says "Another press will be required" it is telling you to wait, you may have to wait for a minute or even more.</small><br>
-                13. Once you're at the end of that process you should reboot and you'll be back at the "Welcome!" screen. (if you don't reboot/gsctool doesn't work, proceed to the bottom section, "errors while unbricking")<br>
-                14. Get back into developer mode by pressing <span class="highlight">ESC + ↻ + ⏻</span>, then <span class="highlight">CTRL + D</span>, then <span class="highlight">enter</span>.<br> 
-                15. Either press <span class="highlight">CTRL + D</span> if you're on a <span style="color:white;">"OS verification is OFF"</span> white screen, or <span class="highlight">enter</span> if you're on a <span style="color:gray;">"You are in developer mode"</span> black screen. (keep this in mind if you want to stay in developer mode, you will have to do this each time you power it on)<br>
-                16. You may get a "Your system is transitioning into Developer Mode" screen, wait for the 5 minute timer to finish, then follow step 15 again to boot into ChromeOS.<br>
-                17. Start setting up your chromebook in OOBE by clicking <span class="highlight">Get Started</span>, going through WiFi, and continuing. Then prepare for the next step. <br>
-                18. When it says <span class="highlight">Enterprise Enrollement</span> boot into recovery mode <span class="highlight">(ESC + ↻ + ⏻)</span> <br>
-                19. Boot the shim<br>
-                20. Run deprovise (D), then reboot (e), boot and you should be unenrolled!<br>
-                <small>join <a href="https://discord.gg/Pb6qUkacpj">Copernicium</a> on discord for help with anything (MAKE SURE TO READ EVERYTHING FIRST)</small>
+                
+                <small>ボード名がわからない場合、<a href="https://cros.tech">cros.tech</a> などのサイトからモデル名で検索することで確認できます。</small><br>
+                8. <span class="highlight">ESC + ↻ + ⏻</span> を押し、 <span class="highlight">CTRL + D</span> を押して、 <span class="highlight">enter</span> を押すと、デベロッパーモードが有効になります。（ブロックされていても大丈夫です）そして、<span class="highlight">ESC + ↻ + ⏻</span> でリカバリーモードに入ります。<br>
+                9. Shim の USB を挿します。<br>
+                <small>「デバイスに ChromeOS が含まれていません」や「有効なイメージがありません」などの画面が出た場合、間違った Shim を選んだか、デベロッパーモードでないか、書き込みに失敗したか、ファイルが異なるか、壊れているか（続行不可）が考えられます。</small><br>
+                10. Shim が起動したら、 <span class="highlight">D</span> を押して "Deprovision" を選択します。<br>
+                11. 次に、 <span class="highlight">B</span> を押して bash shell を開きます。ここから文鎮化を解除します。<br>
+                12. 次のコマンドを実行してください:<pre class="highlight">gsctool -a -o</pre>「Press PP button now!」と出たら、電源ボタンをポチポチ押します。（少し時間がかかります）<small>「Another press will be required」が出たら、待機してください。1分以上待つこともあります。</small><br>
+                13. 完了すると、再起動されて「ようこそ」画面に出ます。（再起動しないか、gsctool が正常に動作しない場合、一番下の「文鎮化解除中にエラーが出たら」をご覧ください）<br>
+                14. <span class="highlight">ESC + ↻ + ⏻</span> を押し、 <span class="highlight">CTRL + D</span> を押して、 <span class="highlight">enter</span> を押し、デベロッパーモードに入ってください。<br> 
+                15. <span style="color:white;">「OS の確認機能はオフになっています」</span> の白い画面が出たら <span class="highlight">CTRL + D</span>、<span style="color:gray;">「デベロッパー（開発者専用）モードです」</span> という灰色の画面が出たら <span class="highlight">enter</span> を押します。（デベロッパーモードを維持することを意識してください。起動時に毎回出てきます。）<br>
+                16. 「デベロッパーモードに移行しています」が出るので、5分待ちます。5分後、ステップ15の通りに起動してください。<br>
+                17. <span class="highlight">はじめる</span>を押して初期設定を開始し、Wi-Fi に接続して続行します。次のステップに備えてください。<br>
+                18. <span class="highlight">企業の登録</span> 画面が出たら、すぐにリカバリーモードに入ります<span class="highlight">(ESC + ↻ + ⏻)</span> <br>
+                19. Shim を起動します。<br>
+                20. Deprovision (D) を行い、再起動します (e) 。起動したら、登録解除成功です！<br>
+                <small>サポートは、 <a href="https://discord.gg/Pb6qUkacpj">Copernicium</a> に参加してください。（英語のみ、この翻訳には関係ありません、このページの内容をすべて読んでから質問してください）</small>
             </details></p>
 
         </section>
         <section id="timer">
-            <h2>finding the reset times</h2>
-            <h3>how to use this?</h3>
+            <h2>リセットタイミングを調べる</h2>
+            <h3>使い方</h3>
             <p>
-                1. Powerwash by going into recovery mode <span class="highlight">ESC + ↻ + ⏻</span>, clicking <span class="highlight">ctrl + d</span>, waiting for reboot, then returning to secure mode <small><b>(DON'T POWERWASH THE NORMAL WAY!!)</b></small> <br>
-                2. Go to <a href="chrome://network#logs">chrome://network#logs</a><br>
-                2. Under the options section check all of the boxes. <br> <small>You can just select the bottom 2 options if you care.</small><br>
-                3. Place the <span class="highlight">combined-logs.tar.gz</span> file into the dropzone below. <br>
-                <small>If you experience an error ask for help in <a href="https://discord.gg/Pb6qUkacpj">Copernicium</a> </small>
+                1. リカバリーモード <span class="highlight">ESC + ↻ + ⏻</span> に入り、<span class="highlight">ctrl + d</span> を押し、再起動後、通常モードに戻ってください。この手順で Powerwash が可能です。 <small><b>（通常の方法で Powerwash しないでください！）</b></small> <br>
+                2. <a href="chrome://network#logs">chrome://network#logs</a> へ行きます。<br>
+                2. オプションの項目にすべてチェックをいれます。<br> <small>下2つだけにチェックをいれても可</small><br>
+                3. <span class="highlight">combined-logs.tar.gz</span> ファイルを下にドロップ <br>
+                <small>エラーが出たら <a href="https://discord.gg/Pb6qUkacpj">Copernicium</a> まで</small>
                 <br>
-                4. The reset timing will appear below the dropzone <br>
+                4. ドロップゾーンの下にリセットタイミングが出てきます。 <br>
             </p>
 
             <div class="dropzone" id="dropzone">
-                Drop your combined-logs_******-******.tar.gz file here
+                combined-logs_******-******.tar.gz ファイルをここにドラッグアンドドロップ
                 <br>or<br>
                 <input type="file" id="fileInput" accept=".tar.gz">
             </div>
@@ -174,56 +175,56 @@
             <div id="reset-text"></div>
             <script src="script.js"></script> <!-- do not shift the script src. this is to ensure the elements above have loaded first. -->
             <p>
-            <span style="color: #ed8796;">Please report bugs to <a href="https://discord.gg/Pb6qUkacpj">Copernicium</a> on discord</span></p>
+            <span style="color: #ed8796;">バグは <a href="https://discord.gg/Pb6qUkacpj">Copernicium</a>（英語のみ、この翻訳に関係ありません）の Discord へ</span></p>
         </section>
         <section>
-            <h2>errors</h2>
+            <h2>よくあるエラー</h2>
             <details>
                 <summary>Could not parse for 'Show enrollment screen'</summary>
                 <p>
-                    Powerwash and try again, if you continue to see this ask for help in <a href="https://discord.gg/Pb6qUkacpj">Copernicium</a>
+                    Powerwash してもう一度試してください。エラーが続く場合、<a href="https://discord.gg/Pb6qUkacpj">Copernicium</a>（英語のみ、この翻訳に関係ありません）で質問してください。
                 </p>
             </details>
             <details>
-                <summary><span class="highlight">gsctool -a -o</span> immediately exits with no output and doesn't reboot</summary>
+                <summary><span class="highlight">gsctool -a -o</span> が出力なしですぐに中断され、再起動されない</summary>
                 <p>
-                    1. Run <span class="highlight">gsctool -a -k</span><br>
-                    2. Run <span class="highlight">gsctool -a -o</span><br>
+                    1. <span class="highlight">gsctool -a -k</span> を実行し<br>
+                    2. <span class="highlight">gsctool -a -o</span> を実行<br>
                 </p>
             </details>
             <details>
-                <summary><span class="highlight">gsctool -a -o</span> isn't rebooting, but you went through the pp process</summary>
+                <summary><span class="highlight">gsctool -a -o</span> 電源ボタンを押せと言われたが、その後再起動されない</summary>
                 <p>
-                    1. boot into the shim <br>
-                    2. go into the factory install part of sh1mmer with <span class="highlight">f + enter</span> <br>
-                    3. select the option corressponding to tpm reset <br>
-                    4. do that twice <br>
-                    5. boot back into the shim <br>
-                    6. run the following: Deprovision, Disable Dev Block, Allow booting from USB <br>
-                    7. open the bash terminal with <span class="highlight">b</span> <br>
-                    8. run <span class="highlight">gsctool -a -k</span> followed by <span class="highlight">gsctool -a -o</span> <br>
+                    1. Shim を起動<br>
+                    2. Factory install <span class="highlight">f + enter</span> に入る <br>
+                    3. tpm reset の項目を選択<br>
+                    4. これを二回行う<br>
+                    5. もう一度 Shim を起動<br>
+                    6. 順に Deprovision, Disable Dev Block, Allow booting from USB を「()」内のキーを押して選択する。<br>
+                    7. <span class="highlight">b</span> で Bash を開く<br>
+                    8. <span class="highlight">gsctool -a -k</span> を実行して <span class="highlight">gsctool -a -o</span> を実行する <br>
                 </p>
             </details>
             <details>
-                <summary>still enrolling after completing the guide</summary>
+                <summary>説明通りにしても企業の登録が出続ける</summary>
                 <p>
-                    make sure you've done steps 17-20
-                    1. stay in dev mode (DON'T LEAVE OR U MIGHT BE COOKED!)\n
-                    2. join <a href="https://discord.gg/Pb6qUkacpj">Copernicium</a> for help lol
+                    ステップ17～20ができているかを確認する。
+                    1. デベロッパーモードを維持（維持しなければタヒぬぞ）\n
+                    2. <a href="https://discord.gg/Pb6qUkacpj">Copernicium</a>（英語のみ、この翻訳に関係ありません）に来い
                 </p>
             </details>
             <details>
-                <summary>HELP PLEASE I'M STUCK ON STEP 8</summary>
+                <summary>ステップ8？なにそれ？</summary>
                 <p>
                     <video controls>
                         <source src="images/IMG_3168.mov" type="video/mp4"></video>
                 </p>
             </details>
-            <span style="color: #ed8796;">if these don't work, please report the error to <a href="https://discord.gg/Pb6qUkacpj">Copernicium</a> on discord</span>
+            <span style="color: #ed8796;">これでも無理な場合、<a href="https://discord.gg/Pb6qUkacpj">Copernicium</a>（英語のみ、この翻訳に関係ありません）でエラーを伝えてください。</span>
         </section>
         <br>
         <footer>
-            <h3>Credits:</h3>
+            <h3>クレジット:</h3>
             <p>
                 <strong><a href="https://discord.com/users/758049822409228348">byte</a></strong> - Pioneering the development of this, finding the original bug, and coming up with the log consistency idea, and creating the majority of the website.<br>
                 <strong><a href="https://discord.com/users/476169716998733834">OlyB</a></strong> - Found out when we were supposed to restart, all we had left was figuring out when that was.<br>
